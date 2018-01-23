@@ -2,11 +2,11 @@
 
 namespace BashSoft
 {
-    class Program
+    class Launcher
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            IOManager.TraverseDirectory(@"C:\Users\Brain\dev\DuckyDebug-Web");
         }
     }
 }
