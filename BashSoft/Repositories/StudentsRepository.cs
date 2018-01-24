@@ -119,6 +119,10 @@ namespace BashSoft.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets all the students from the course and lists their names and grades
+        /// </summary>
+        /// <param name="courseName"></param>
         public static void GetAllStudentsFromCourse(string courseName)
         {
             if(IsQueryForCoursePossible(courseName))

@@ -2,6 +2,7 @@
 
 using BashSoft.IO;
 using BashSoft.Repositories;
+using BashSoft.SimpleJudge;
 
 namespace BashSoft
 {
@@ -9,8 +10,7 @@ namespace BashSoft
     {
         static void Main(string[] args)
         {
-            StudentsRepository.InitializeData();
-            StudentsRepository.GetAllStudentsFromCourse("Unity");
+            
         }
     }
 }

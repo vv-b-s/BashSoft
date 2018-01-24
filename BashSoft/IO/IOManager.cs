@@ -25,7 +25,8 @@ namespace BashSoft.IO
             subFolders.Enqueue(path);
 
             //Get the initial depth level to measure correctly the depth later
-            var initialDepthLevel = path.Split(@"\").Length;
+            var pathSeparator = GetPathSeparator(path);
+            var initialDepthLevel = path.Split(pathSeparator).Length;
 
             //Traverse the subfolders
             while (subFolders.Count > 0)
@@ -33,7 +34,7 @@ namespace BashSoft.IO
                 var folderPath = subFolders.Dequeue();
 
                 //Measure the level of depth where the folder is so it can be displayed correctly on the output
-                var depthLevel = folderPath.Split(@"\").Length - initialDepthLevel;
+                var depthLevel = folderPath.Split(pathSeparator).Length - initialDepthLevel;
 
                 WriteMessageOnNewLine($"{new string('-', depthLevel)}{folderPath}");
 
@@ -42,5 +43,12 @@ namespace BashSoft.IO
                     subFolders.Enqueue(folder);
             }
         }
+
+        /// <summary>
+        /// Choose path separator, depending on the operating system
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static char GetPathSeparator(string path) => path.Contains("\\") ? '\\' : '/';
     }
 }
