@@ -56,7 +56,7 @@ namespace BashSoft.SimpleJudge
         /// <returns></returns>
         private static string GetMismatchPath(string expectedOutputPath)
         {
-            var pathSeparator = IOManager.GetPathSeparator(expectedOutputPath);
+            var pathSeparator = SessionData.PathSeparator;
 
             //Get the folder where the output will be
             var lastIndexOfPathSeparator = expectedOutputPath.LastIndexOf(pathSeparator);

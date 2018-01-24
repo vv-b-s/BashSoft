@@ -10,7 +10,7 @@ namespace BashSoft
     {
         static void Main(string[] args)
         {
-            
+            IOManager.TraverseDirectory(0);
         }
     }
 }
