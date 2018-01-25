@@ -20,5 +20,6 @@ namespace BashSoft
         public static string ComparisonOfFilesWithDifferentSizesException => "Files not of equal size, certain mismatch.";
         public static string ForbiddenSymbolsContainedInNameException => "The given name contains symbols that are not allowed to be used in names of files and folders.";
         public static string InvalidUPOperationException => "Unable to go higher in partition hierarchy";
+        public static string UnableToParseNumberException => "The sequence you've written is not a valid number.";
     }
 }

@@ -20,6 +20,8 @@ namespace BashSoft
             }
             set { _curentPath = value; }
         }
+
+        //In some operating systems like Linux the path slash is '/' but in Windows is '\' so this needs to be caught on time
         public static string PathSeparator
         {
             get

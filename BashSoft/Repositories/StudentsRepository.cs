@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using BashSoft.IO;
@@ -13,15 +14,15 @@ namespace BashSoft.Repositories
         private static Dictionary<string, Dictionary<string, List<int>>> studentsByCourse;
 
         /// <summary>
-        /// Initialize students data.
+        /// Initialize students data. From a file in the current location
         /// </summary>
-        public static void InitializeData()
+        public static void InitializeData(string fileName)
         {
             if (!isDataInitialized)
             {
                 WriteMessageOnNewLine("Reading data...");
                 studentsByCourse = new Dictionary<string, Dictionary<string, List<int>>>();
-                ReadData();
+                ReadData(fileName);
             }
             else
                 DisplayException(ExceptionMessages.DataAlreadyInitialisedException);
@@ -30,32 +31,37 @@ namespace BashSoft.Repositories
         /// <summary>
         /// Reads the given data of the courses and students and marks and initializes it in a dictionary
         /// </summary>
-        private static void ReadData()
+        private static void ReadData(string fileName)
         {
-            string input;
-
-            while(!string.IsNullOrEmpty(input = Console.ReadLine()))
+            var path = SessionData.CurrentPath + SessionData.PathSeparator + fileName;
+            if (File.Exists(path))
             {
-                var tokens = input.Split(" ");
+                var lines = new Queue<string>(File.ReadAllLines(path));
 
-                var course = tokens[0];
-                var student = tokens[1];
-                int.TryParse(tokens[2], out int mark);
+                while (lines.Count > 0)
+                {
+                    var tokens = lines.Dequeue().Split(" ");
 
-                //If there is no such course, create one
-                if(!studentsByCourse.ContainsKey(course))
-                    studentsByCourse[course] = new Dictionary<string, List<int>>();
+                    var course = tokens[0];
+                    var student = tokens[1];
+                    int.TryParse(tokens[2], out int mark);
 
-                //If there is no such student, create one
-                if (!studentsByCourse[course].ContainsKey(student))
-                    studentsByCourse[course][student] = new List<int>();
+                    //If there is no such course, create one
+                    if (!studentsByCourse.ContainsKey(course))
+                        studentsByCourse[course] = new Dictionary<string, List<int>>();
 
-                //Add the mark to the student
-                studentsByCourse[course][student].Add(mark);
+                    //If there is no such student, create one
+                    if (!studentsByCourse[course].ContainsKey(student))
+                        studentsByCourse[course][student] = new List<int>();
+
+                    //Add the mark to the student
+                    studentsByCourse[course][student].Add(mark);
+                }
+
+                isDataInitialized = true;
+                WriteMessageOnNewLine("Data read!");
             }
-
-            isDataInitialized = true;
-            WriteMessageOnNewLine("Data read!");
+            else DisplayException(ExceptionMessages.InvalidPathException);
         }
 
         /// <summary>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-
 using static BashSoft.IO.OutputWriter;
 
 namespace BashSoft.IO
@@ -104,11 +103,19 @@ namespace BashSoft.IO
                 }
                 catch (ArgumentOutOfRangeException) { DisplayException(ExceptionMessages.InvalidUPOperationException); }
             }
+
             //Otherwsise if we want to enter a folder
             else
             {
+                //If the last symbol is a slash than we needn't add anothr one below in the code
+                var lastSymbolIsSeparator = currentPath[currentPath.Length - 1].ToString() == SessionData.PathSeparator;
+
                 //If current folder is 'C:\Users\Folder' and we want to enter SubFoldEr then the resulting path would be 'C:\Users\Folder\SubFoldEr'
-                currentPath += $"{SessionData.PathSeparator}{relativePath}";
+                if(lastSymbolIsSeparator)
+                    currentPath += relativePath;
+                else
+                    currentPath += $"{SessionData.PathSeparator}{relativePath}";
+
                 ChangeCurrentDirectoryAbsolute(currentPath);
             }
         }

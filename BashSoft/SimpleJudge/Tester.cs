@@ -17,7 +17,8 @@ namespace BashSoft.SimpleJudge
         {
             OutputWriter.WriteMessageOnNewLine("Reading files...");
 
-            try
+            //It is a good practice to avoid try-catch if possible
+            if (File.Exists(userOutputPath) && File.Exists(expectedOutputPath))
             {
                 var mismatchPath = GetMismatchPath(expectedOutputPath);
 
@@ -30,12 +31,8 @@ namespace BashSoft.SimpleJudge
                 PrintOutput(mismatches, hasMismatch, mismatchPath);
                 OutputWriter.WriteMessageOnNewLine("Files read!");
             }
-            catch (Exception ex)
-            {
-                //Make sure path is not empty or invalid
-                if (ex is FileNotFoundException || ex is NotSupportedException)
-                    OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
-            }
+            else OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
+
         }
 
         /// <summary>
@@ -54,8 +51,11 @@ namespace BashSoft.SimpleJudge
 
                 OutputWriter.WriteMessage(outputString.ToString());
 
-                try { File.WriteAllText(mismatchPath, outputString.ToString()); }
-                catch (DirectoryNotFoundException) { OutputWriter.DisplayException(ExceptionMessages.InvalidPathException); }
+                //Check if the folder is valid
+                var folderPath = mismatchPath.Substring(0, mismatchPath.LastIndexOf(SessionData.PathSeparator));
+                if (Directory.Exists(folderPath))
+                        File.WriteAllText(mismatchPath, outputString.ToString());
+                    else OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
 
                 return;
             }
