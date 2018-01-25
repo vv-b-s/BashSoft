@@ -14,7 +14,7 @@ namespace BashSoft.IO
         /// Use Breadth First Search Algorithm to display all the directories and subdirectories in a given path
         /// https://upload.wikimedia.org/wikipedia/commons/5/5d/Breadth-First-Search-Algorithm.gif
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="endDepth"></param>
         public static void TraverseDirectory(int endDepth)
         {
             var path = SessionData.CurrentPath;
@@ -79,6 +79,44 @@ namespace BashSoft.IO
             //E.g. C:\curentPathFolder + "\newDirectoryName"
             var newPath = SessionData.CurrentPath + pathSeparator + newDirectoryName;
             Directory.CreateDirectory(newPath);
+        }
+
+        /// <summary>
+        /// Change the directory to a relative folder. Use '..' to go UP and [folder name] to go inside a folder
+        /// </summary>
+        /// <param name="relativePath"></param>
+        public static void ChangeCurrentDirectoryRelative(string relativePath)
+        {
+            var currentPath = SessionData.CurrentPath;
+            
+            //Go one folder up
+            if(relativePath == "..")
+            {
+                //If the current path is 'C:\Users\Folder' we want to make it 'C:\Users\'
+                var indexOfLastPathSeparator = currentPath.LastIndexOf(SessionData.PathSeparator);
+                var newPath = currentPath.Substring(0, indexOfLastPathSeparator);
+
+                SessionData.CurrentPath = newPath;
+            }
+            //Otherwsise if we want to enter a folder
+            else
+            {
+                //If current folder is 'C:\Users\Folder' and we want to enter SubFoldEr then the resulting path would be 'C:\Users\Folder\SubFoldEr'
+                currentPath += $"{SessionData.PathSeparator}{relativePath}";
+                ChangeCurrentDirectoryAbsolute(currentPath);
+            }
+        }
+
+        public static void ChangeCurrentDirectoryAbsolute(string absolutePath)
+        {
+            if(Directory.Exists(absolutePath))
+            {
+                SessionData.CurrentPath = absolutePath;
+                return;
+            }
+
+            //If the path does not exist, will display exception
+            DisplayException(ExceptionMessages.InvalidPathException);
         }
     }
 }

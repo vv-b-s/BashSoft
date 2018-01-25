@@ -15,5 +15,6 @@ namespace BashSoft
         public static string DataNotInitializedException => "The data structure must be initialised first in order to make any operations with it.";
         public static string InexistingCourseInDataBaseException => "The course you are trying to get does not exist in the data base!";
         public static string InexistingStudentInDataBaseException => "The user name for the student you are trying to get does not exist!";
+        public static string InvalidPathException => "The folder/file you are trying to access at the current address, does not exist.";
     }
 }
