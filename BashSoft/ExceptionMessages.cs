@@ -16,5 +16,9 @@ namespace BashSoft
         public static string InexistingCourseInDataBaseException => "The course you are trying to get does not exist in the data base!";
         public static string InexistingStudentInDataBaseException => "The user name for the student you are trying to get does not exist!";
         public static string InvalidPathException => "The folder/file you are trying to access at the current address, does not exist.";
+        public static string AccessDeniedException => "The folder/file you are trying to get access needs a higher level of rights than you currently have.";
+        public static string ComparisonOfFilesWithDifferentSizesException => "Files not of equal size, certain mismatch.";
+        public static string ForbiddenSymbolsContainedInNameException => "The given name contains symbols that are not allowed to be used in names of files and folders.";
+        public static string InvalidUPOperationException => "Unable to go higher in partition hierarchy";
     }
 }

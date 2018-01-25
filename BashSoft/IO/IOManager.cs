@@ -29,12 +29,10 @@ namespace BashSoft.IO
             var pathSeparator = SessionData.PathSeparator;
             var initialDepthLevel = path.Split(pathSeparator).Length;
 
-            //Using StringBuilder to display tree faster
-            var filesAndFolders = new StringBuilder();
-
             //Traverse the subfolders
             while (subFolders.Count > 0)
-            { 
+            {
+
                 var folderPath = subFolders.Dequeue();
 
                 //Measure the level of depth where the folder is so it can be displayed correctly on the output
@@ -44,28 +42,30 @@ namespace BashSoft.IO
                 if (endDepth - currentDepth < 0)
                     break;
 
-                filesAndFolders.AppendLine($"{new string('-', currentDepth)}{folderPath}");
+                WriteMessageOnNewLine($"{new string('-', currentDepth)}{folderPath}");
 
-                //Print the files in the folder
-                var files = Directory.GetFiles(folderPath);
-                foreach (var file in files)
+                try
                 {
-                    var lastSlash = file.LastIndexOf(pathSeparator);
+                    //Print the files in the folder
+                    var files = Directory.GetFiles(folderPath);
+                    foreach (var file in files)
+                    {
+                        var lastSlash = file.LastIndexOf(pathSeparator);
 
-                    //Getting only the file name
-                    var fileName = file.Substring(lastSlash);
+                        //Getting only the file name
+                        var fileName = file.Substring(lastSlash);
 
-                    //Full path will be replaced with dashes, to point out files are located there
-                    filesAndFolders.AppendLine($"{new string('-', lastSlash)}{fileName}");
+                        //Full path will be replaced with dashes, to point out files are located there
+                        WriteMessageOnNewLine($"{new string('-', lastSlash)}{fileName}");
+                    }
+
+                    //Enqueue the subfolders
+                    var subFoldersToEnqueue = Directory.GetDirectories(folderPath);
+                    foreach (var folder in subFoldersToEnqueue)
+                        subFolders.Enqueue(folder);
                 }
-
-                //Enqueue the subfolders
-                var subFoldersToEnqueue = Directory.GetDirectories(folderPath);
-                foreach (var folder in subFoldersToEnqueue)
-                    subFolders.Enqueue(folder);
+                catch (UnauthorizedAccessException) { DisplayException(ExceptionMessages.AccessDeniedException); }
             }
-
-            WriteMessageOnNewLine(filesAndFolders.ToString());
         }
 
         /// <summary>
@@ -78,7 +78,9 @@ namespace BashSoft.IO
 
             //E.g. C:\curentPathFolder + "\newDirectoryName"
             var newPath = SessionData.CurrentPath + pathSeparator + newDirectoryName;
-            Directory.CreateDirectory(newPath);
+
+            try { Directory.CreateDirectory(newPath); }
+            catch (ArgumentException) { DisplayException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
         }
 
         /// <summary>
@@ -92,11 +94,15 @@ namespace BashSoft.IO
             //Go one folder up
             if(relativePath == "..")
             {
-                //If the current path is 'C:\Users\Folder' we want to make it 'C:\Users\'
-                var indexOfLastPathSeparator = currentPath.LastIndexOf(SessionData.PathSeparator);
-                var newPath = currentPath.Substring(0, indexOfLastPathSeparator);
+                try
+                {
+                    //If the current path is 'C:\Users\Folder' we want to make it 'C:\Users\'
+                    var indexOfLastPathSeparator = currentPath.LastIndexOf(SessionData.PathSeparator);
+                    var newPath = currentPath.Substring(0, indexOfLastPathSeparator);
 
-                SessionData.CurrentPath = newPath;
+                    SessionData.CurrentPath = newPath;
+                }
+                catch (ArgumentOutOfRangeException) { DisplayException(ExceptionMessages.InvalidUPOperationException); }
             }
             //Otherwsise if we want to enter a folder
             else
