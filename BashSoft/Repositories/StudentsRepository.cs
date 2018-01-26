@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using BashSoft.IO;
 using static BashSoft.IO.OutputWriter;
@@ -12,6 +13,7 @@ namespace BashSoft.Repositories
     {
         public static bool isDataInitialized = false;
         private static Dictionary<string, Dictionary<string, List<int>>> studentsByCourse;
+        public static Regex matcher;
 
         /// <summary>
         /// Initialize students data. From a file in the current location
@@ -22,6 +24,7 @@ namespace BashSoft.Repositories
             {
                 WriteMessageOnNewLine("Reading data...");
                 studentsByCourse = new Dictionary<string, Dictionary<string, List<int>>>();
+                matcher = new Regex(@"^(?<courseName>[A-Z][A-Za-z\+#]+_[JFMASOND][a-z]+_\d{4})\s(?<userName>[A-Z][a-z]{0,3}\d{2}_\d{2,4})\s(?<score>\d+)$");
                 ReadData(fileName);
             }
             else
@@ -33,29 +36,40 @@ namespace BashSoft.Repositories
         /// </summary>
         private static void ReadData(string fileName)
         {
-            var path = SessionData.CurrentPath + SessionData.PathSeparator + fileName;
+            var path = fileName;
+
+            //If the path doesn't contain even one path separator it means it is relative path and full path needs to be pointed out
+            if(!path.Contains(SessionData.PathSeparator))
+                path = SessionData.CurrentPath + SessionData.PathSeparator + fileName;
+
             if (File.Exists(path))
             {
                 var lines = new Queue<string>(File.ReadAllLines(path));
 
                 while (lines.Count > 0)
                 {
-                    var tokens = lines.Dequeue().Split(" ");
+                    var matches = matcher.Match(lines.Dequeue());
+                    if (matches.Value.Length!=0)
+                    {
+                        var course = matches.Groups["courseName"].Value;
+                        var student = matches.Groups["userName"].Value;
+                        int.TryParse(matches.Groups["score"].Value, out int mark);
 
-                    var course = tokens[0];
-                    var student = tokens[1];
-                    int.TryParse(tokens[2], out int mark);
+                        //If the mark is not between 0 and 100 the data will not be added
+                        if (mark < 0 || mark > 100)
+                            continue;
 
-                    //If there is no such course, create one
-                    if (!studentsByCourse.ContainsKey(course))
-                        studentsByCourse[course] = new Dictionary<string, List<int>>();
+                        //If there is no such course, create one
+                        if (!studentsByCourse.ContainsKey(course))
+                            studentsByCourse[course] = new Dictionary<string, List<int>>();
 
-                    //If there is no such student, create one
-                    if (!studentsByCourse[course].ContainsKey(student))
-                        studentsByCourse[course][student] = new List<int>();
+                        //If there is no such student, create one
+                        if (!studentsByCourse[course].ContainsKey(student))
+                            studentsByCourse[course][student] = new List<int>();
 
-                    //Add the mark to the student
-                    studentsByCourse[course][student].Add(mark);
+                        //Add the mark to the student
+                        studentsByCourse[course][student].Add(mark); 
+                    }
                 }
 
                 isDataInitialized = true;
@@ -109,7 +123,7 @@ namespace BashSoft.Repositories
         /// Sends student information to the OutputWriter
         /// </summary>
         /// <param name="student"></param>
-        public static void PrintStudent(KeyValuePair<string, List<int>> student) => OutputWriter.PrintStudent(student.Key, student.Value);
+        private static void PrintStudent(KeyValuePair<string, List<int>> student) => OutputWriter.PrintStudent(student.Key, student.Value);
 
         /// <summary>
         /// Will print the student of the course and his/hers marks

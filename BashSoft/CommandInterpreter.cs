@@ -22,7 +22,6 @@ namespace BashSoft
             var command = data.Dequeue();
 
             var commandInterpreted = false;
-            var invalidCommand = false;
 
             if (command == "open")                  commandInterpreted = TryOpenFile(data);
             else if(command == "mkdir")             commandInterpreted = TryCreateDirectory(data);
@@ -31,6 +30,7 @@ namespace BashSoft
             else if(command == "cdRel")             commandInterpreted = TryChangePathRelatively(data);
             else if(command == "cdAbs")             commandInterpreted = TryChangePathAbsolute(data);
             else if(command == "readDb")            commandInterpreted = TryReadDatabaseFromFile(data);
+            else if(command== "show")               commandInterpreted = TryShowWantedData(data);
             else if(command == "help")              commandInterpreted = TryGetHelp(data);
             else if(command == "filter")            commandInterpreted = TryToFilter(data);
             else if(command == "order")             commandInterpreted = TryToOrder(data);
@@ -157,6 +157,29 @@ namespace BashSoft
 
             var fileName = data.Dequeue();
             StudentsRepository.InitializeData(fileName);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Shows student and marks or students from a course and their marks
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private static bool TryShowWantedData(Queue<string> data)
+        {
+            var dataCount = data.Count;
+            if (dataCount < 1 || dataCount > 2)
+                return false;
+
+            var course = data.Dequeue();
+            if (dataCount == 1)
+                StudentsRepository.GetAllStudentsFromCourse(course);                
+            if (dataCount == 2)
+            {
+                var username = data.Dequeue();
+                StudentsRepository.GetStudentScoresFromCourse(course, username);
+            }
 
             return true;
         }

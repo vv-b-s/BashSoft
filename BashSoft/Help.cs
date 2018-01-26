@@ -18,6 +18,7 @@ namespace BashSoft
             message.AppendFormat("|{0, -125}|\n", "change directory - changeDirREl:relative path");
             message.AppendFormat("|{0, -125}|\n", "change directory - changeDir:absolute path");
             message.AppendFormat("|{0, -125}|\n", "read students data base - readDb: path");
+            message.AppendFormat("|{0, -125}|\n", "show courseName (username) - user name may be omitted");
             message.AppendFormat("|{0, -125}|\n", "filter {courseName} excelent/average/poor  take 2/5/all students - filterExcelent (the output is written on the console)");
             message.AppendFormat("|{0, -125}|\n", "order increasing students - order {courseName} ascending/descending take 20/10/all (the output is written on the console)");
             message.AppendFormat("|{0, -125}|\n", "download file - download: path of file (saved in current directory)");
