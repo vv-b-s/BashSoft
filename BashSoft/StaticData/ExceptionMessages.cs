@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BashSoft
+namespace BashSoft.StaticData
 {
     public static class ExceptionMessages
     {
@@ -21,5 +21,7 @@ namespace BashSoft
         public static string ForbiddenSymbolsContainedInNameException => "The given name contains symbols that are not allowed to be used in names of files and folders.";
         public static string InvalidUPOperationException => "Unable to go higher in partition hierarchy";
         public static string UnableToParseNumberException => "The sequence you've written is not a valid number.";
+        public static string InvalidStudentFilterException => "The given filter is not one of the following: excellent/average/poor";
+        public static string InvalidComparisonQueryException => "The comparison query you want, does not exist in the context of the current program!";
     }
 }

@@ -5,15 +5,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using BashSoft.IO;
+using BashSoft.StaticData;
 using static BashSoft.IO.OutputWriter;
 
-namespace BashSoft.Repositories
+namespace BashSoft.StudentRepository
 {
     public static class StudentsRepository
     {
-        public static bool isDataInitialized = false;
-        private static Dictionary<string, Dictionary<string, List<int>>> studentsByCourse;
-        public static Regex matcher;
+        internal static Dictionary<string, Dictionary<string, List<int>>> studentsByCourse;
+
+        private static bool isDataInitialized = false;
+        private static Regex matcher;
 
         /// <summary>
         /// Initialize students data. From a file in the current location
@@ -24,7 +26,7 @@ namespace BashSoft.Repositories
             {
                 WriteMessageOnNewLine("Reading data...");
                 studentsByCourse = new Dictionary<string, Dictionary<string, List<int>>>();
-                matcher = new Regex(@"^(?<courseName>[A-Z][A-Za-z\+#]+_[JFMASOND][a-z]+_\d{4})\s(?<userName>[A-Z][a-z]{0,3}\d{2}_\d{2,4})\s(?<score>\d+)$");
+                matcher = new Regex(@"^(?<courseName>[A-Z][A-Za-z\+#]+_[JFMASOND][a-z]+_\d{4})\s(?<userName>[A-Z][a-z]{0,3}\d{2}_\d{2,4})\s(?<scores>\d+)$");
                 ReadData(fileName);
             }
             else
@@ -32,7 +34,7 @@ namespace BashSoft.Repositories
         }
 
         /// <summary>
-        /// Reads the given data of the courses and students and marks and initializes it in a dictionary
+        /// Reads the given data of the courses and students and scores and initializes it in a dictionary
         /// </summary>
         private static void ReadData(string fileName)
         {
@@ -53,10 +55,10 @@ namespace BashSoft.Repositories
                     {
                         var course = matches.Groups["courseName"].Value;
                         var student = matches.Groups["userName"].Value;
-                        int.TryParse(matches.Groups["score"].Value, out int mark);
+                        int.TryParse(matches.Groups["scores"].Value, out int scores);
 
-                        //If the mark is not between 0 and 100 the data will not be added
-                        if (mark < 0 || mark > 100)
+                        //If the scores is not between 0 and 100 the data will not be added
+                        if (scores < 0 || scores > 100)
                             continue;
 
                         //If there is no such course, create one
@@ -67,8 +69,8 @@ namespace BashSoft.Repositories
                         if (!studentsByCourse[course].ContainsKey(student))
                             studentsByCourse[course][student] = new List<int>();
 
-                        //Add the mark to the student
-                        studentsByCourse[course][student].Add(mark); 
+                        //Add the scores to the student
+                        studentsByCourse[course][student].Add(scores); 
                     }
                 }
 
@@ -123,10 +125,20 @@ namespace BashSoft.Repositories
         /// Sends student information to the OutputWriter
         /// </summary>
         /// <param name="student"></param>
-        private static void PrintStudent(KeyValuePair<string, List<int>> student) => OutputWriter.PrintStudent(student.Key, student.Value);
+        internal static void PrintStudent(KeyValuePair<string, List<int>> student) => OutputWriter.PrintStudent(student.Key, student.Value);
 
         /// <summary>
-        /// Will print the student of the course and his/hers marks
+        /// Prints all the students from a given course
+        /// </summary>
+        /// <param name="students"></param>
+        internal static void PrintAllStudentsFromCourse(Dictionary<string, List<int>> students)
+        {
+            foreach (var student in students)
+                PrintStudent(student);
+        }
+
+        /// <summary>
+        /// Will print the student of the course and his/hers scores
         /// </summary>
         /// <param name="courseName"></param>
         /// <param name="userName"></param>
@@ -134,8 +146,8 @@ namespace BashSoft.Repositories
         {
             if(IsQueryForStudentPossible(courseName, userName))
             {
-                var studentMarks = studentsByCourse[courseName][userName];
-                OutputWriter.PrintStudent(userName, studentMarks);
+                var studentscores = studentsByCourse[courseName][userName];
+                OutputWriter.PrintStudent(userName, studentscores);
             }
         }
 
@@ -148,8 +160,7 @@ namespace BashSoft.Repositories
             if(IsQueryForCoursePossible(courseName))
             {
                 WriteMessageOnNewLine($"{courseName}:");
-                foreach (var student in studentsByCourse[courseName])
-                    PrintStudent(student);
+                PrintAllStudentsFromCourse(studentsByCourse[courseName]);
             }
         }
     }

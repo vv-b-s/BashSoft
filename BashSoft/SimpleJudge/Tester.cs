@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using BashSoft.IO;
+using BashSoft.StaticData;
 
 namespace BashSoft.SimpleJudge
 {
@@ -16,6 +17,12 @@ namespace BashSoft.SimpleJudge
         public static void CompareContent(string userOutputPath, string expectedOutputPath)
         {
             OutputWriter.WriteMessageOnNewLine("Reading files...");
+
+            //Convert relative paths to absolute
+            if (!userOutputPath.Contains(SessionData.PathSeparator))
+                userOutputPath = SessionData.CurrentPath + SessionData.PathSeparator + userOutputPath;
+            if (!expectedOutputPath.Contains(SessionData.PathSeparator))
+                expectedOutputPath = SessionData.CurrentPath + SessionData.PathSeparator + expectedOutputPath;
 
             //It is a good practice to avoid try-catch if possible
             if (File.Exists(userOutputPath) && File.Exists(expectedOutputPath))

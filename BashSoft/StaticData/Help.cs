@@ -4,7 +4,7 @@ using System.Text;
 
 using BashSoft.IO;
 
-namespace BashSoft
+namespace BashSoft.StaticData
 {
     public static class Help
     {

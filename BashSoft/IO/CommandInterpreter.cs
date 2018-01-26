@@ -1,5 +1,5 @@
-﻿using BashSoft.IO;
-using BashSoft.Repositories;
+﻿using BashSoft.StaticData;
+using BashSoft.StudentRepository;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Text;
 
 using static BashSoft.IO.OutputWriter;
 
-namespace BashSoft
+namespace BashSoft.IO
 {
     public static class CommandInterpreter
     {
@@ -30,13 +30,13 @@ namespace BashSoft
             else if(command == "cdRel")             commandInterpreted = TryChangePathRelatively(data);
             else if(command == "cdAbs")             commandInterpreted = TryChangePathAbsolute(data);
             else if(command == "readDb")            commandInterpreted = TryReadDatabaseFromFile(data);
-            else if(command== "show")               commandInterpreted = TryShowWantedData(data);
+            else if(command == "show")              commandInterpreted = TryShowWantedData(data);
             else if(command == "help")              commandInterpreted = TryGetHelp(data);
             else if(command == "filter")            commandInterpreted = TryToFilter(data);
             else if(command == "order")             commandInterpreted = TryToOrder(data);
-            else if(command == "decOrder")          commandInterpreted = TryToOrderDescending(data);
-            else if(command == "download")          commandInterpreted = TryToDownload(data);
-            else if(command == "downloadAsynch")    commandInterpreted = TryToDownloadAsync(data);
+            /*else if(command == "decOrder")          commandInterpreted = TryToOrderDescending(data);
+            else if(command == "download")          commandInterpreted = TryToDownload(data);                 NOT IMPLEMENTED
+            else if(command == "downloadAsynch")    commandInterpreted = TryToDownloadAsync(data);*/
             else if(command == "quit")              return false;
             else
             {
@@ -59,9 +59,20 @@ namespace BashSoft
         {
             if (data.Count != 1)
                 return false;
+            var fileName = data.Dequeue();
+            if (!fileName.Contains(SessionData.PathSeparator))
+                fileName = SessionData.CurrentPath + SessionData.PathSeparator + fileName;
 
-            var fileName = SessionData.CurrentPath + SessionData.PathSeparator + data.Dequeue();
-            Process.Start(fileName);
+            //https://stackoverflow.com/questions/4055266/open-a-file-with-notepad-in-c-sharp
+            var process = new Process();
+            process.StartInfo = new ProcessStartInfo()
+            {
+                //Tells OS to use the default program
+                UseShellExecute = true,
+                FileName = fileName
+            };
+
+            process.Start();
 
             return true;
         }
@@ -198,6 +209,65 @@ namespace BashSoft
             return true;
         }
 
+        /// <summary>
+        /// By the given data, it filters the students
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private static bool TryToFilter(Queue<string> data)
+        {
+            if (data.Count != 4)
+                return false;
+
+            var courseName = data.Dequeue();
+            var filter = data.Dequeue().ToLower();
+            var takeCommand = data.Dequeue().ToLower();
+            var takeAmountString = data.Dequeue().ToLower();
+
+            if (takeCommand != "take")
+                return false;
+
+            var dataParsed = int.TryParse(takeAmountString, out int takeNumber);
+
+
+            if (dataParsed && takeNumber >= 0)
+                StudentRepository.Filtering.Filters.FilterAndTake(courseName, filter, takeNumber);
+            else if (takeAmountString == "all") 
+                StudentRepository.Filtering.Filters.FilterAndTake(courseName, filter, -1);
+            else DisplayException(ExceptionMessages.UnableToParseNumberException);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to order the data either by ascedning or descending
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private static bool TryToOrder(Queue<string> data)
+        {
+            if (data.Count != 4)
+                return false;
+
+            var courseName = data.Dequeue();
+            var comparison = data.Dequeue().ToLower();
+            var takeCommand = data.Dequeue().ToLower();
+            var takeAmountString = data.Dequeue().ToLower();
+
+            if (takeCommand != "take")
+                return false;
+
+            var dataParsed = int.TryParse(takeAmountString, out int takeNumber);
+
+            if (dataParsed && takeNumber >= 0)
+                Orderer.OrderAndTake(courseName, comparison, takeNumber);
+            else if (takeAmountString == "all")
+                Orderer.OrderAndTake(courseName, comparison, -1);
+            else DisplayException(ExceptionMessages.UnableToParseNumberException);
+
+            return true;
+        }
+
         private static bool TryToDownloadAsync(Queue<string> data)
         {
             throw new NotImplementedException();
@@ -209,16 +279,6 @@ namespace BashSoft
         }
 
         private static bool TryToOrderDescending(Queue<string> data)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static bool TryToOrder(Queue<string> data)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static bool TryToFilter(Queue<string> data)
         {
             throw new NotImplementedException();
         }

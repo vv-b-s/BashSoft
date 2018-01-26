@@ -1,8 +1,10 @@
-﻿using System;
+﻿using BashSoft.StaticData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 using static BashSoft.IO.OutputWriter;
+
 
 namespace BashSoft.IO
 {

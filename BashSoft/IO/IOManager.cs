@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 
 using static BashSoft.IO.OutputWriter;
+using BashSoft.StaticData;
 
 namespace BashSoft.IO
 {
