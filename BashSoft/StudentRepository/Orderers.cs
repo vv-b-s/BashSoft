@@ -19,7 +19,7 @@ namespace BashSoft.StudentRepository
         {
             if (StudentsRepository.studentsByCourse.ContainsKey(courseName))
             {
-                //If the studentsToTake is 0, it will take all the students from the list
+                //If the studentsToTake is -1, it will take all the students from the list
                 if (studentsToTake == -1)
                     studentsToTake = StudentsRepository.studentsByCourse[courseName].Count;
 
