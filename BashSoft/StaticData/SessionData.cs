@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using BashSoft.StudentRepository;
+
 namespace BashSoft.StaticData
 {
     public static class SessionData
@@ -14,7 +16,7 @@ namespace BashSoft.StaticData
         {
             get
             {
-                if(string.IsNullOrEmpty(_curentPath))
+                if (string.IsNullOrEmpty(_curentPath))
                     _curentPath = Directory.GetCurrentDirectory();
                 return _curentPath;
             }

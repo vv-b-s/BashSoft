@@ -23,5 +23,10 @@ namespace BashSoft.StaticData
         public static string UnableToParseNumberException => "The sequence you've written is not a valid number.";
         public static string InvalidStudentFilterException => "The given filter is not one of the following: excellent/average/poor";
         public static string InvalidComparisonQueryException => "The comparison query you want, does not exist in the context of the current program!";
+        public static string InvalidCommandException => "Invalid command: {0}";
+        public static string InvalidDataException => "Invalid data: {0}";
+        public static string StudentAlreadyEnrolledException => "The student exists in {0}";
+        public static string InvalidNumberOfScoresException => "The number of scores for the given course is greater than the possible.";
+        public static string InvalidScoreException => "Scores must be between 0 and 100!";
     }
 }

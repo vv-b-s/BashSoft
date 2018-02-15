@@ -14,7 +14,7 @@ namespace BashSoft.SimpleJudge
         /// </summary>
         /// <param name="userOutputPath"></param>
         /// <param name="expectedOutputPath"></param>
-        public static void CompareContent(string userOutputPath, string expectedOutputPath)
+        public void CompareContent(string userOutputPath, string expectedOutputPath)
         {
             OutputWriter.WriteMessageOnNewLine("Reading files...");
 
@@ -48,7 +48,7 @@ namespace BashSoft.SimpleJudge
         /// <param name="mismatches"></param>
         /// <param name="hasMismatch"></param>
         /// <param name="mismatchPath"></param>
-        private static void PrintOutput(string[] mismatches, bool hasMismatch, string mismatchPath)
+        private void PrintOutput(string[] mismatches, bool hasMismatch, string mismatchPath)
         {
             if(hasMismatch)
             {
@@ -75,7 +75,7 @@ namespace BashSoft.SimpleJudge
         /// </summary>
         /// <param name="expectedOutputPath"></param>
         /// <returns></returns>
-        private static string GetMismatchPath(string expectedOutputPath)
+        private string GetMismatchPath(string expectedOutputPath)
         {
             var pathSeparator = SessionData.PathSeparator;
 
@@ -98,7 +98,7 @@ namespace BashSoft.SimpleJudge
         /// <param name="expectedLines"></param>
         /// <param name="hasMismatch"></param>
         /// <returns></returns>
-        private static string[] GetLinesWithPossibleMismatches(string[] userLines, string[] expectedLines, out bool hasMismatch)
+        private string[] GetLinesWithPossibleMismatches(string[] userLines, string[] expectedLines, out bool hasMismatch)
         {
             var minLines = expectedLines.Length;
             hasMismatch = false;

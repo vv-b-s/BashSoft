@@ -37,11 +37,21 @@ namespace BashSoft.IO
         }
 
         /// <summary>
+        /// Displays real exceptions
+        /// </summary>
+        /// <param name="excaptionMessages"></param>
+        internal static void DisplayException(Exception exception, int line)
+        {
+            var message = $"{exception.Message} at line : {line}";
+            DisplayException(message);
+        }
+
+        /// <summary>
         /// Prints student data by given name and marks
         /// </summary>
         /// <param name="studentName"></param>
         /// <param name="studentMarks"></param>
-        public static void PrintStudent(string studentName, List<int> studentMarks) =>
-            WriteMessageOnNewLine($"{studentName} - {string.Join(", ", studentMarks)}");
+        public static void PrintStudent(KeyValuePair<string, double> studentData) =>
+            WriteMessageOnNewLine($"{studentData.Key} - {studentData.Value:F2}");
     }
 }

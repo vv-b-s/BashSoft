@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using static BashSoft.IO.OutputWriter;
 using BashSoft.StaticData;
 
 namespace BashSoft.IO
 {
-    public static class IOManager
+    public class IOManager
     {
         /// <summary>
         /// Use Breadth First Search Algorithm to display all the directories and subdirectories in a given path
         /// https://upload.wikimedia.org/wikipedia/commons/5/5d/Breadth-First-Search-Algorithm.gif
         /// </summary>
         /// <param name="endDepth"></param>
-        public static void TraverseDirectory(int endDepth)
+        public void TraverseDirectory(int endDepth)
         {
             var path = SessionData.CurrentPath;
-            WriteEmptyLine();
+            OutputWriter.WriteEmptyLine();
 
             var subFolders = new Queue<string>();
 
@@ -42,7 +41,7 @@ namespace BashSoft.IO
                 if (endDepth - currentDepth < 0)
                     break;
 
-                WriteMessageOnNewLine($"{new string('-', currentDepth)}{folderPath}");
+                OutputWriter.WriteMessageOnNewLine($"{new string('-', currentDepth)}{folderPath}");
 
                 try
                 {
@@ -56,7 +55,7 @@ namespace BashSoft.IO
                         var fileName = file.Substring(lastSlash);
 
                         //Full path will be replaced with dashes, to point out files are located there
-                        WriteMessageOnNewLine($"{new string('-', lastSlash)}{fileName}");
+                        OutputWriter.WriteMessageOnNewLine($"{new string('-', lastSlash)}{fileName}");
                     }
 
                     //Enqueue the subfolders
@@ -64,7 +63,7 @@ namespace BashSoft.IO
                     foreach (var folder in subFoldersToEnqueue)
                         subFolders.Enqueue(folder);
                 }
-                catch (UnauthorizedAccessException) { DisplayException(ExceptionMessages.AccessDeniedException); }
+                catch (UnauthorizedAccessException) { OutputWriter.DisplayException(ExceptionMessages.AccessDeniedException); }
             }
         }
 
@@ -72,7 +71,7 @@ namespace BashSoft.IO
         /// Creates a directory in the curent folder the program is in
         /// </summary>
         /// <param name="newDirectoryName"></param>
-        public static void CreateDirectoryInCurrentFolder(string newDirectoryName)
+        public void CreateDirectoryInCurrentFolder(string newDirectoryName)
         {
             var pathSeparator = SessionData.PathSeparator;
 
@@ -80,14 +79,14 @@ namespace BashSoft.IO
             var newPath = SessionData.CurrentPath + pathSeparator + newDirectoryName;
 
             try { Directory.CreateDirectory(newPath); }
-            catch (ArgumentException) { DisplayException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
+            catch (ArgumentException) { OutputWriter.DisplayException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
         }
 
         /// <summary>
         /// Change the directory to a relative folder. Use '..' to go UP and [folder name] to go inside a folder
         /// </summary>
         /// <param name="relativePath"></param>
-        public static void ChangeCurrentDirectoryRelative(string relativePath)
+        public void ChangeCurrentDirectoryRelative(string relativePath)
         {
             var currentPath = SessionData.CurrentPath;
             
@@ -102,7 +101,7 @@ namespace BashSoft.IO
 
                     SessionData.CurrentPath = newPath;
                 }
-                catch (ArgumentOutOfRangeException) { DisplayException(ExceptionMessages.InvalidUPOperationException); }
+                catch (ArgumentOutOfRangeException) { OutputWriter.DisplayException(ExceptionMessages.InvalidUPOperationException); }
             }
 
             //Otherwsise if we want to enter a folder
@@ -121,7 +120,11 @@ namespace BashSoft.IO
             }
         }
 
-        public static void ChangeCurrentDirectoryAbsolute(string absolutePath)
+        /// <summary>
+        /// Changes the directory by given absolute path
+        /// </summary>
+        /// <param name="absolutePath"></param>
+        public void ChangeCurrentDirectoryAbsolute(string absolutePath)
         {
             if(Directory.Exists(absolutePath))
             {
@@ -130,7 +133,7 @@ namespace BashSoft.IO
             }
 
             //If the path does not exist, will display exception
-            DisplayException(ExceptionMessages.InvalidPathException);
+            OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
         }
     }
 }
