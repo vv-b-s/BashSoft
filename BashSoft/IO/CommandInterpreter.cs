@@ -62,6 +62,7 @@ namespace BashSoft.IO
             return true;
         }
 
+        #region CLI Methods
         /// <summary>
         /// Opens a file in the current location
         /// </summary>
@@ -240,53 +241,44 @@ namespace BashSoft.IO
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private bool TryToFilter(Queue<string> data)
-        {
-            //TODO: Add not found course exception
-            if (data.Count != 2 && data.Count != 4)
-                return false;
-
-            var courseName = data.Dequeue();
-            var filter = data.Dequeue().ToLower();
-
-            //Writing 'take all' is optional
-            var takeCommand = "";
-            var takeAmountString = "";
-            if (data.Count > 0)
-            {
-                takeCommand = data.Dequeue().ToLower();
-                takeAmountString = data.Dequeue().ToLower();
-            }
-
-            if (takeCommand != "take" && data.Count > 0)
-                return false;
-
-            var dataParsed = int.TryParse(takeAmountString, out int takeNumber);
-
-            if (dataParsed && takeNumber >= 0 && repository.HasCourse(courseName))
-                repository.GetAllStudentsFromCourse(courseName, SortingOperation.Filter, filter, takeNumber);
-
-            else if (takeAmountString == "all" || takeAmountString == "")
-                repository.GetAllStudentsFromCourse(courseName, SortingOperation.Filter, filter);
-
-            else OutputWriter.DisplayException(ExceptionMessages.UnableToParseNumberException);
-
-            return true;
-        }
+        private bool TryToFilter(Queue<string> data) => PerformQueryOperation(data, SortingOperation.Filter);
 
         /// <summary>
         /// Tries to order the data either by ascedning or descending
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private bool TryToOrder(Queue<string> data)
+        private bool TryToOrder(Queue<string> data) => PerformQueryOperation(data, SortingOperation.Order);
+
+        private bool TryToDownloadAsync(Queue<string> data)
         {
-            //TODO: Add not found course exception
+            throw new NotImplementedException();
+        }
+
+        private bool TryToDownload(Queue<string> data)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool TryToOrderDescending(Queue<string> data)
+        {
+            throw new NotImplementedException();
+        } 
+        #endregion
+
+        /// <summary>
+        /// Either perform filtering or ordering of desired data
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        private bool PerformQueryOperation(Queue<string> data, SortingOperation operation)
+        {
             if (data.Count != 2 && data.Count != 4)
                 return false;
 
             var courseName = data.Dequeue();
-            var comparison = data.Dequeue().ToLower();
+            var criteria = data.Dequeue().ToLower();
 
             //Writing 'take all' is optional
             var takeCommand = "";
@@ -303,29 +295,14 @@ namespace BashSoft.IO
             var dataParsed = int.TryParse(takeAmountString, out int takeNumber);
 
             if (dataParsed && takeNumber >= 0)
-                repository.GetAllStudentsFromCourse(courseName, SortingOperation.Order, comparison, takeNumber);
+                repository.GetAllStudentsFromCourse(courseName, operation, criteria, takeNumber);
 
             else if (takeAmountString == "all" || takeAmountString == "")
-                repository.GetAllStudentsFromCourse(courseName, SortingOperation.Order, comparison);
+                repository.GetAllStudentsFromCourse(courseName, operation, criteria);
 
             else OutputWriter.DisplayException(ExceptionMessages.UnableToParseNumberException);
 
             return true;
-        }
-
-        private bool TryToDownloadAsync(Queue<string> data)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool TryToDownload(Queue<string> data)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool TryToOrderDescending(Queue<string> data)
-        {
-            throw new NotImplementedException();
         }
     }
 }
