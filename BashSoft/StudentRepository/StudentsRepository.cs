@@ -44,7 +44,7 @@ namespace BashSoft.StudentRepository
                 ReadData(fileName);
             }
             else
-                OutputWriter.DisplayException(ExceptionMessages.DataAlreadyInitialisedException);
+                throw new ArgumentException(ExceptionMessages.DataAlreadyInitialisedException);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace BashSoft.StudentRepository
         public void UnloadData()
         {
             if (!isDataInitialized)
-                OutputWriter.DisplayException(ExceptionMessages.DataNotInitializedException);
+                throw new ArgumentException(ExceptionMessages.DataNotInitializedException);
 
             //Clearing the dictionary is better than new initialization.
             courses.Clear();
@@ -122,7 +122,7 @@ namespace BashSoft.StudentRepository
                     isDataInitialized = true;
                     OutputWriter.WriteMessageOnNewLine("Data read!");
                 }
-                else OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
+                else throw new ArgumentException(ExceptionMessages.InvalidPathException);
             }
             catch (FormatException fex)
             {
@@ -144,13 +144,11 @@ namespace BashSoft.StudentRepository
 
             //Else if data is initialized but the course does not exist
             else if (isDataInitialized && !HasCourse(courseName))
-                OutputWriter.DisplayException(ExceptionMessages.InexistingCourseInDataBaseException);
+                throw new ArgumentException(ExceptionMessages.InexistingCourseInDataBaseException);
 
             //Otherwise if nothing exists
             else
-                OutputWriter.DisplayException(ExceptionMessages.DataNotInitializedException);
-
-            return false;
+                throw new ArgumentException(ExceptionMessages.DataNotInitializedException);
         }
 
         /// <summary>
@@ -166,9 +164,7 @@ namespace BashSoft.StudentRepository
                 return true;
 
             //Otherewise will dislpay exception message
-            OutputWriter.DisplayException(ExceptionMessages.InexistingStudentInDataBaseException);
-
-            return false;
+            throw new ArgumentException(ExceptionMessages.InexistingStudentInDataBaseException);
         }
 
         /// <summary>

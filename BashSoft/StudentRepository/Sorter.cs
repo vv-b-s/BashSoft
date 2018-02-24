@@ -23,6 +23,7 @@ namespace BashSoft.StudentRepository
 
             if (compairson == "ascending")
             {
+                //Sorts the students by their scores and get take as many as desired
                 var orderedStudents = studentsWithMarks
                     .OrderBy(studentScores => studentScores.Value)
                     .Take(studentsToTake)
@@ -32,6 +33,7 @@ namespace BashSoft.StudentRepository
             }
             else if (compairson == "descending")
             {
+                //Sorts the students by their scores and get take as many as desired
                 var orderedStudents = studentsWithMarks
                     .OrderByDescending(studentScores => studentScores.Value)
                     .Take(studentsToTake)

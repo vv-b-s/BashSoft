@@ -21,6 +21,7 @@ namespace BashSoft.SimpleJudge
             //Convert relative paths to absolute
             if (!userOutputPath.Contains(SessionData.PathSeparator))
                 userOutputPath = SessionData.CurrentPath + SessionData.PathSeparator + userOutputPath;
+
             if (!expectedOutputPath.Contains(SessionData.PathSeparator))
                 expectedOutputPath = SessionData.CurrentPath + SessionData.PathSeparator + expectedOutputPath;
 
@@ -38,7 +39,7 @@ namespace BashSoft.SimpleJudge
                 PrintOutput(mismatches, hasMismatch, mismatchPath);
                 OutputWriter.WriteMessageOnNewLine("Files read!");
             }
-            else OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
+            else throw new IOException(ExceptionMessages.InvalidPathException);
 
         }
 

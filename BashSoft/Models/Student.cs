@@ -9,17 +9,33 @@ namespace BashSoft.Models
 {
     class Student
     {
-        public string UserName { get; set; }
-        public Dictionary<string, Course> EnrolledCourses { get; private set; }
-        public Dictionary<string, double> MarksByCourseName { get; private set; }
+        private string userName;
+        private Dictionary<string, Course> enrolledCourses;
+        private Dictionary<string, double> marksByCourseName;
 
         public Student(string userName)
         {
             UserName = userName;
 
-            EnrolledCourses = new Dictionary<string, Course>();
-            MarksByCourseName = new Dictionary<string, double>();
+            enrolledCourses = new Dictionary<string, Course>();
+            marksByCourseName = new Dictionary<string, double>();
         }
+
+        public string UserName
+        {
+            get => userName;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentException(nameof(userName), ExceptionMessages.NullOrEmptyValueException);
+
+                userName = value;
+            }
+        }
+
+        public IReadOnlyDictionary<string, Course> EnrolledCourses => enrolledCourses;
+
+        public IReadOnlyDictionary<string, double> MarksByCourseName => marksByCourseName;
 
         /// <summary>
         /// Will enroll the student in a course. Adds the student to the course and the course to the student
@@ -28,10 +44,10 @@ namespace BashSoft.Models
         public void EnrollInCourse(Course course)
         {
             if (EnrolledCourses.ContainsKey(course.Name))
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, course.Name));
+                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, course.Name));
             else
             {
-                EnrolledCourses[course.Name] = course;
+                enrolledCourses[course.Name] = course;
                 course.EnrollStudent(this);
             }
         }
@@ -44,18 +60,12 @@ namespace BashSoft.Models
         public void SetMarkOnCourse(string courseName, params int[] scores)
         {
             if (!EnrolledCourses.ContainsKey(courseName))
-            {
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, courseName));
-                return;
-            }
+                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, courseName));
 
             if (scores.Length > Course.NumberOfTasksOnExam)
-            {
-                OutputWriter.DisplayException(ExceptionMessages.InvalidNumberOfScoresException);
-                return;
-            }
+                throw new ArgumentException(ExceptionMessages.InvalidNumberOfScoresException);
 
-            MarksByCourseName[courseName] = CalculateMark(scores);
+            marksByCourseName[courseName] = CalculateMark(scores);
         }
 
         /// <summary>

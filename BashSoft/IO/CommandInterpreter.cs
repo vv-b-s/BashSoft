@@ -30,6 +30,15 @@ namespace BashSoft.IO
         public bool InterpredCommand(string input)
         {
             var data = new Queue<string>(input.Split());
+
+            try { return ParseCommand(data); }
+            catch (Exception ex) { OutputWriter.DisplayException(ex.Message); }
+
+            return true;
+        }
+
+        private bool ParseCommand(Queue<string>data)
+        {
             var command = data.Dequeue();
 
             var commandInterpreted = false;
@@ -46,7 +55,7 @@ namespace BashSoft.IO
             else if(command == "help")              commandInterpreted = TryGetHelp(data);
             else if(command == "filter")            commandInterpreted = TryToFilter(data);
             else if(command == "order")             commandInterpreted = TryToOrder(data);
-            /*else if(command == "decOrder")          commandInterpreted = TryToOrderDescending(data);
+            /*else if(command == "decOrder")        commandInterpreted = TryToOrderDescending(data);
             else if(command == "download")          commandInterpreted = TryToDownload(data);                 NOT IMPLEMENTED
             else if(command == "downloadAsynch")    commandInterpreted = TryToDownloadAsync(data);*/
             else if(command == "quit")              return false;

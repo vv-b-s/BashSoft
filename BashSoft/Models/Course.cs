@@ -8,8 +8,8 @@ namespace BashSoft.Models
 {
     class Course
     {
-        public string Name { get; set; }
-        public Dictionary<string, Student> StudentsByName { get; private set; }
+        private string name;
+        private Dictionary<string, Student> studentsByName;
 
         public static int NumberOfTasksOnExam => 5;
         public static int MaxScoreOnExam => 100;
@@ -17,8 +17,22 @@ namespace BashSoft.Models
         public Course(string name)
         {
             Name = name;
-            StudentsByName = new Dictionary<string, Student>();
+            studentsByName = new Dictionary<string, Student>();
         }
+
+        public string Name
+        {
+            get => name;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentException(nameof(name), ExceptionMessages.NullOrEmptyValueException);
+
+                name = value;
+            }
+        }
+
+        public IReadOnlyDictionary<string, Student> StudentsByName => studentsByName;
 
         /// <summary>
         /// Adds a student to a course
@@ -26,10 +40,10 @@ namespace BashSoft.Models
         /// <param name="student"></param>
         internal void EnrollStudent(Student student)
         {
-            if (StudentsByName.ContainsKey(student.UserName))
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, this.Name));
+            if (studentsByName.ContainsKey(student.UserName))
+                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, Name));
 
-            else StudentsByName[student.UserName] = student;
+            else studentsByName[student.UserName] = student;
         }
     }
 }

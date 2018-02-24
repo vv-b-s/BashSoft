@@ -28,5 +28,6 @@ namespace BashSoft.StaticData
         public static string StudentAlreadyEnrolledException => "The student exists in {0}";
         public static string InvalidNumberOfScoresException => "The number of scores for the given course is greater than the possible.";
         public static string InvalidScoreException => "Scores must be between 0 and 100!";
+        public static string NullOrEmptyValueException => "The value of the variable CANNOT be null or empty!";
     }
 }

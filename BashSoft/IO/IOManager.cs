@@ -79,7 +79,7 @@ namespace BashSoft.IO
             var newPath = SessionData.CurrentPath + pathSeparator + newDirectoryName;
 
             try { Directory.CreateDirectory(newPath); }
-            catch (ArgumentException) { OutputWriter.DisplayException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
+            catch (ArgumentException) { throw new ArgumentException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace BashSoft.IO
 
                     SessionData.CurrentPath = newPath;
                 }
-                catch (ArgumentOutOfRangeException) { OutputWriter.DisplayException(ExceptionMessages.InvalidUPOperationException); }
+                catch (ArgumentOutOfRangeException) { throw new ArgumentOutOfRangeException("indexOfLastPathSeparator", ExceptionMessages.InvalidUPOperationException); }
             }
 
             //Otherwsise if we want to enter a folder
@@ -126,14 +126,10 @@ namespace BashSoft.IO
         /// <param name="absolutePath"></param>
         public void ChangeCurrentDirectoryAbsolute(string absolutePath)
         {
-            if(Directory.Exists(absolutePath))
-            {
-                SessionData.CurrentPath = absolutePath;
-                return;
-            }
+            if (!Directory.Exists(absolutePath))
+                throw new ArgumentException(ExceptionMessages.InvalidPathException);
 
-            //If the path does not exist, will display exception
-            OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
+            else SessionData.CurrentPath = absolutePath;
         }
     }
 }

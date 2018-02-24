@@ -21,7 +21,7 @@ namespace BashSoft.StudentRepository.Filtering
         /// <returns></returns>
         private Dictionary<string,double> FilterAndTake(Dictionary<string, double> studentsWithMarks, Predicate<double> givenFilter, int studentsToTake)
         {
-            //Filter out the needed students
+            //Get the students which mark matches the criteria of the given filter and take the desired number of students
             studentsWithMarks = studentsWithMarks
                 .Where(mark => givenFilter(mark.Value))
                 .Take(studentsToTake)
