@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using BashSoft.Exceptions;
 using BashSoft.StaticData;
 
 namespace BashSoft.IO
@@ -79,7 +79,7 @@ namespace BashSoft.IO
             var newPath = SessionData.CurrentPath + pathSeparator + newDirectoryName;
 
             try { Directory.CreateDirectory(newPath); }
-            catch (ArgumentException) { throw new ArgumentException(ExceptionMessages.ForbiddenSymbolsContainedInNameException); }
+            catch (ArgumentException) { throw new InvalidFileNameException(); }
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace BashSoft.IO
 
                     SessionData.CurrentPath = newPath;
                 }
-                catch (ArgumentOutOfRangeException) { throw new ArgumentOutOfRangeException("indexOfLastPathSeparator", ExceptionMessages.InvalidUPOperationException); }
+                catch (ArgumentOutOfRangeException) { throw new InvalidPathException(ExceptionMessages.InvalidUPOperationException); }
             }
 
             //Otherwsise if we want to enter a folder
@@ -127,7 +127,7 @@ namespace BashSoft.IO
         public void ChangeCurrentDirectoryAbsolute(string absolutePath)
         {
             if (!Directory.Exists(absolutePath))
-                throw new ArgumentException(ExceptionMessages.InvalidPathException);
+                throw new InvalidPathException();
 
             else SessionData.CurrentPath = absolutePath;
         }

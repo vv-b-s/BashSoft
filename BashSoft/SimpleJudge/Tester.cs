@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.StaticData;
 
@@ -39,7 +40,7 @@ namespace BashSoft.SimpleJudge
                 PrintOutput(mismatches, hasMismatch, mismatchPath);
                 OutputWriter.WriteMessageOnNewLine("Files read!");
             }
-            else throw new IOException(ExceptionMessages.InvalidPathException);
+            else throw new InvalidPathException();
 
         }
 
@@ -61,11 +62,11 @@ namespace BashSoft.SimpleJudge
 
                 //Check if the folder is valid
                 var folderPath = mismatchPath.Substring(0, mismatchPath.LastIndexOf(SessionData.PathSeparator));
-                if (Directory.Exists(folderPath))
-                        File.WriteAllText(mismatchPath, outputString.ToString());
-                    else OutputWriter.DisplayException(ExceptionMessages.InvalidPathException);
 
-                return;
+                if (Directory.Exists(folderPath))
+                    File.WriteAllText(mismatchPath, outputString.ToString());
+
+                else throw new InvalidProgramException();
             }
 
             OutputWriter.WriteMessageOnNewLine("Files are identical. There are no mismatches.");

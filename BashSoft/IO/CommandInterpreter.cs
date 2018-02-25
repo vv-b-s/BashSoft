@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text;
 
 using BashSoft.SimpleJudge;
+using BashSoft.Exceptions;
 
 namespace BashSoft.IO
 {
@@ -59,14 +60,11 @@ namespace BashSoft.IO
             else if(command == "download")          commandInterpreted = TryToDownload(data);                 NOT IMPLEMENTED
             else if(command == "downloadAsynch")    commandInterpreted = TryToDownloadAsync(data);*/
             else if(command == "quit")              return false;
-            else
-            {
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.InvalidCommandException, command));
-                return true;
-            }
+
+            else                                    throw new InvalidCommandException(command);
 
             if (!commandInterpreted)
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.InvalidDataException, string.Join(" ", data)));
+                throw new InvalidDataException(string.Join(" ", data));
 
             return true;
         }

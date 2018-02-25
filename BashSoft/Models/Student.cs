@@ -1,4 +1,5 @@
-﻿using BashSoft.IO;
+﻿using BashSoft.Exceptions;
+using BashSoft.IO;
 using BashSoft.StaticData;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace BashSoft.Models
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new ArgumentException(nameof(userName), ExceptionMessages.NullOrEmptyValueException);
+                    throw new InvalidStringException();
 
                 userName = value;
             }
@@ -43,8 +44,10 @@ namespace BashSoft.Models
         /// <param name="course"></param>
         public void EnrollInCourse(Course course)
         {
+            //If the student's enrolled courses contains the desired course name it is repeated. which means he allreadye enrolled for it
             if (EnrolledCourses.ContainsKey(course.Name))
-                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, course.Name));
+                throw new DuplicateEntryInStructureException(userName, course.Name);
+
             else
             {
                 enrolledCourses[course.Name] = course;
@@ -60,7 +63,7 @@ namespace BashSoft.Models
         public void SetMarkOnCourse(string courseName, params int[] scores)
         {
             if (!EnrolledCourses.ContainsKey(courseName))
-                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, courseName));
+                throw new ArgumentException($"{userName} is not enrolled in {courseName}");
 
             if (scores.Length > Course.NumberOfTasksOnExam)
                 throw new ArgumentException(ExceptionMessages.InvalidNumberOfScoresException);

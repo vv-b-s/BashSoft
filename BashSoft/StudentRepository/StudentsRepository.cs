@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.Models;
 using BashSoft.StaticData;
@@ -44,7 +44,7 @@ namespace BashSoft.StudentRepository
                 ReadData(fileName);
             }
             else
-                throw new ArgumentException(ExceptionMessages.DataAlreadyInitialisedException);
+                throw new DataInitializationException(true);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace BashSoft.StudentRepository
         public void UnloadData()
         {
             if (!isDataInitialized)
-                throw new ArgumentException(ExceptionMessages.DataNotInitializedException);
+                throw new DataInitializationException(false);
 
             //Clearing the dictionary is better than new initialization.
             courses.Clear();
@@ -122,7 +122,7 @@ namespace BashSoft.StudentRepository
                     isDataInitialized = true;
                     OutputWriter.WriteMessageOnNewLine("Data read!");
                 }
-                else throw new ArgumentException(ExceptionMessages.InvalidPathException);
+                else throw new InvalidPathException();
             }
             catch (FormatException fex)
             {
@@ -144,11 +144,11 @@ namespace BashSoft.StudentRepository
 
             //Else if data is initialized but the course does not exist
             else if (isDataInitialized && !HasCourse(courseName))
-                throw new ArgumentException(ExceptionMessages.InexistingCourseInDataBaseException);
+                throw new InexcistingCourseException();
 
             //Otherwise if nothing exists
             else
-                throw new ArgumentException(ExceptionMessages.DataNotInitializedException);
+                throw new DataInitializationException(false);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace BashSoft.StudentRepository
                 return true;
 
             //Otherewise will dislpay exception message
-            throw new ArgumentException(ExceptionMessages.InexistingStudentInDataBaseException);
+            throw new InexistingStudentException();
         }
 
         /// <summary>

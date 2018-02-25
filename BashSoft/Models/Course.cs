@@ -1,4 +1,5 @@
-﻿using BashSoft.IO;
+﻿using BashSoft.Exceptions;
+using BashSoft.IO;
 using BashSoft.StaticData;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace BashSoft.Models
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new ArgumentException(nameof(name), ExceptionMessages.NullOrEmptyValueException);
+                    throw new InvalidStringException();
 
                 name = value;
             }
@@ -41,7 +42,7 @@ namespace BashSoft.Models
         internal void EnrollStudent(Student student)
         {
             if (studentsByName.ContainsKey(student.UserName))
-                throw new DuplicateWaitObjectException(string.Format(ExceptionMessages.StudentAlreadyEnrolledException, Name));
+                throw new DuplicateEntryInStructureException(student.UserName, Name);
 
             else studentsByName[student.UserName] = student;
         }
