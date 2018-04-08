@@ -8,16 +8,17 @@ using System.Text;
 using BashSoft.SimpleJudge;
 using BashSoft.Exceptions;
 using BashSoft.IO.Commands;
+using BashSoft.Contracts;
 
 namespace BashSoft.IO
 {
-    public class CommandInterpreter
+    public class CommandInterpreter:IInterpreter
     {
-        private Tester judge;
-        private StudentsRepository repository;
-        private IOManager IOManager;
+        private IContentComparer judge;
+        private IStudentsRepository repository;
+        private IDirectoryManager IOManager;
 
-        public CommandInterpreter(Tester judge, StudentsRepository repository, IOManager IOManager)
+        public CommandInterpreter(IContentComparer judge, IStudentsRepository repository, IDirectoryManager IOManager)
         {
             this.judge = judge;
             this.repository = repository;
@@ -47,7 +48,7 @@ namespace BashSoft.IO
             return true;
         }
 
-        private Command ParseCommand(string input, string command, string[] data)
+        private IExecutable ParseCommand(string input, string command, string[] data)
         {
 
             if (command == "open")                  return new OpenFileCommand(input, data, judge, repository, IOManager);

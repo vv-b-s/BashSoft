@@ -1,4 +1,5 @@
-﻿using BashSoft.Exceptions;
+﻿using BashSoft.Contracts;
+using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.StaticData;
 using System;
@@ -8,17 +9,20 @@ using System.Text;
 
 namespace BashSoft.Models
 {
-    class Student
+    public class SoftUniStudent : IStudent
     {
+        public const int NumberOfTasksOnExam = 5;
+        public const int MaxScoreOnExam = 100;
+
         private string userName;
-        private Dictionary<string, Course> enrolledCourses;
+        private Dictionary<string, ICourse> enrolledCourses;
         private Dictionary<string, double> marksByCourseName;
 
-        public Student(string userName)
+        public SoftUniStudent(string userName)
         {
             UserName = userName;
 
-            enrolledCourses = new Dictionary<string, Course>();
+            enrolledCourses = new Dictionary<string, ICourse>();
             marksByCourseName = new Dictionary<string, double>();
         }
 
@@ -34,7 +38,7 @@ namespace BashSoft.Models
             }
         }
 
-        public IReadOnlyDictionary<string, Course> EnrolledCourses => enrolledCourses;
+        public IReadOnlyDictionary<string, ICourse> EnrolledCourses => enrolledCourses;
 
         public IReadOnlyDictionary<string, double> MarksByCourseName => marksByCourseName;
 
@@ -42,7 +46,7 @@ namespace BashSoft.Models
         /// Will enroll the student in a course. Adds the student to the course and the course to the student
         /// </summary>
         /// <param name="course"></param>
-        public void EnrollInCourse(Course course)
+        public void EnrollInCourse(ICourse course)
         {
             //If the student's enrolled courses contains the desired course name it is repeated. which means he allreadye enrolled for it
             if (EnrolledCourses.ContainsKey(course.Name))
@@ -65,7 +69,7 @@ namespace BashSoft.Models
             if (!EnrolledCourses.ContainsKey(courseName))
                 throw new ArgumentException($"{userName} is not enrolled in {courseName}");
 
-            if (scores.Length > Course.NumberOfTasksOnExam)
+            if (scores.Length > NumberOfTasksOnExam)
                 throw new ArgumentException(ExceptionMessages.InvalidNumberOfScoresException);
 
             marksByCourseName[courseName] = CalculateMark(scores);

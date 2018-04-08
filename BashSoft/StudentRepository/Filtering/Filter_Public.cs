@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using BashSoft.Contracts;
 using BashSoft.IO;
 using BashSoft.StaticData;
 
@@ -12,7 +12,7 @@ namespace BashSoft.StudentRepository.Filtering
      * Here are all the public methods for filters
      * Partial clases are used to split a class for convenience
      */
-    public partial class Filter
+    public partial class Filter : IDataFilter
     {
         /// <summary>
         /// Filters students from a certain course by the given filter and takes as many as needed
@@ -20,7 +20,7 @@ namespace BashSoft.StudentRepository.Filtering
         /// <param name="courseName"></param>
         /// <param name="wantedFilter"></param>
         /// <param name="studentsToTake"></param>
-        public Dictionary<string, double> FilterAndTake(Dictionary<string, double> studentsWithMarks, string wantedFilter, int studentsToTake)
+        public IReadOnlyDictionary<string, double> FilterAndTake(Dictionary<string, double> studentsWithMarks, string wantedFilter, int studentsToTake)
         {
             //If the studentsToTake is -1, it will take all the students from the list
             if (studentsToTake == -1)

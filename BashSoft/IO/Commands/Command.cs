@@ -1,4 +1,5 @@
-﻿using BashSoft.Exceptions;
+﻿using BashSoft.Contracts;
+using BashSoft.Exceptions;
 using BashSoft.SimpleJudge;
 using BashSoft.StudentRepository;
 using System;
@@ -7,15 +8,15 @@ using System.Text;
 
 namespace BashSoft.IO.Commands
 {
-    public abstract class Command
+    public abstract class Command : IExecutable
     {
         private string input;
         private string[] data;
-        private Tester judge;
-        private StudentsRepository repository;
-        private IOManager inputOutputManager;
+        private IContentComparer judge;
+        private IStudentsRepository repository;
+        private IDirectoryManager inputOutputManager;
 
-        public Command(string input, string[] data, Tester judge, StudentsRepository repository, IOManager iOManager)
+        protected Command(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager)
         {
             this.Input = input;
             this.Data = data;
@@ -48,11 +49,11 @@ namespace BashSoft.IO.Commands
             }
         }
 
-        protected Tester Judge => this.judge;
+        protected IContentComparer Judge => this.judge;
 
-        protected StudentsRepository Repository => this.repository;
+        protected IStudentsRepository Repository => this.repository;
 
-        protected IOManager InputOutputManager => this.inputOutputManager;
+        protected IDirectoryManager InputOutputManager => this.inputOutputManager;
 
         public void DisplayInvalidCommandMessage(string input) => OutputWriter.DisplayException($"The command '{input}' is invalid");
 

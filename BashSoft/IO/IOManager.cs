@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.StaticData;
 
 namespace BashSoft.IO
 {
-    public class IOManager
+    public class IOManager : IDirectoryManager
     {
         /// <summary>
         /// Use Breadth First Search Algorithm to display all the directories and subdirectories in a given path
@@ -89,9 +90,9 @@ namespace BashSoft.IO
         public void ChangeCurrentDirectoryRelative(string relativePath)
         {
             var currentPath = SessionData.CurrentPath;
-            
+
             //Go one folder up
-            if(relativePath == "..")
+            if (relativePath == "..")
             {
                 try
                 {
@@ -111,7 +112,7 @@ namespace BashSoft.IO
                 var lastSymbolIsSeparator = currentPath[currentPath.Length - 1].ToString() == SessionData.PathSeparator;
 
                 //If current folder is 'C:\Users\Folder' and we want to enter SubFoldEr then the resulting path would be 'C:\Users\Folder\SubFoldEr'
-                if(lastSymbolIsSeparator)
+                if (lastSymbolIsSeparator)
                     currentPath += relativePath;
                 else
                     currentPath += $"{SessionData.PathSeparator}{relativePath}";

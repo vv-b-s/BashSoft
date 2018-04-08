@@ -1,4 +1,5 @@
-﻿using BashSoft.Exceptions;
+﻿using BashSoft.Contracts;
+using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.StaticData;
 using System;
@@ -7,18 +8,18 @@ using System.Text;
 
 namespace BashSoft.Models
 {
-    class Course
+    public class SoftUniCourse : ICourse
     {
+        public const int NumberOfTasksOnExam = 5;
+        public const int MaxScoreOnExam = 100;
+
         private string name;
-        private Dictionary<string, Student> studentsByName;
+        private Dictionary<string, IStudent> studentsByName;
 
-        public static int NumberOfTasksOnExam => 5;
-        public static int MaxScoreOnExam => 100;
-
-        public Course(string name)
+        public SoftUniCourse(string name)
         {
             Name = name;
-            studentsByName = new Dictionary<string, Student>();
+            studentsByName = new Dictionary<string, IStudent>();
         }
 
         public string Name
@@ -33,13 +34,13 @@ namespace BashSoft.Models
             }
         }
 
-        public IReadOnlyDictionary<string, Student> StudentsByName => studentsByName;
+        public IReadOnlyDictionary<string, IStudent> StudentsByName => studentsByName;
 
         /// <summary>
         /// Adds a student to a course
         /// </summary>
         /// <param name="student"></param>
-        internal void EnrollStudent(Student student)
+        public void EnrollStudent(IStudent student)
         {
             if (studentsByName.ContainsKey(student.UserName))
                 throw new DuplicateEntryInStructureException(student.UserName, Name);

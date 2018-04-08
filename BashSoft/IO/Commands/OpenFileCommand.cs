@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.SimpleJudge;
 using BashSoft.StaticData;
@@ -11,7 +12,7 @@ namespace BashSoft.IO.Commands
 {
     public class OpenFileCommand : Command
     {
-        public OpenFileCommand(string input, string[] data, Tester judge, StudentsRepository repository, IOManager iOManager) : base(input, data, judge, repository, iOManager)
+        public OpenFileCommand(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager) : base(input, data, judge, repository, iOManager)
         {
             if (data.Length != 2)
                 throw new InvalidCommandException(input);

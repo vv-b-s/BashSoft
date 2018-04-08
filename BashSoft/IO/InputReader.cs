@@ -1,4 +1,5 @@
-﻿using BashSoft.StaticData;
+﻿using BashSoft.Contracts;
+using BashSoft.StaticData;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,10 +7,10 @@ using System.Text;
 
 namespace BashSoft.IO
 {
-    public class InputReader
+    public class InputReader : IReader
     {
-        private CommandInterpreter interpreter;
-        public InputReader(CommandInterpreter interpreter)
+        private IInterpreter interpreter;
+        public InputReader(IInterpreter interpreter)
         {
             this.interpreter = interpreter;
         }

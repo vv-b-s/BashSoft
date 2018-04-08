@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.StaticData;
 
 namespace BashSoft.SimpleJudge
 {
-    public class Tester
+    public class Tester : IContentComparer
     {
         /// <summary>
         /// Compare two files, display and save their mismatches

@@ -1,4 +1,5 @@
-﻿using BashSoft.IO;
+﻿using BashSoft.Contracts;
+using BashSoft.IO;
 using BashSoft.StaticData;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace BashSoft.StudentRepository
 {
-    public class Sorter
+    public class Sorter : IDataSorter
     {
         /// <summary>
         /// Orders the given course by either ascending or descending order
@@ -15,7 +16,7 @@ namespace BashSoft.StudentRepository
         /// <param name="courseName"></param>
         /// <param name="compairson"></param>
         /// <param name="studentsToTake"></param>
-        public Dictionary<string, double> OrderAndTake(Dictionary<string, double> studentsWithMarks, string compairson, int studentsToTake)
+        public IReadOnlyDictionary<string, double> OrderAndTake(Dictionary<string, double> studentsWithMarks, string compairson, int studentsToTake)
         {
             //If the studentsToTake is -1, it will take all the students from the list
             if (studentsToTake == -1)

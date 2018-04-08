@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.Models;
@@ -12,24 +13,23 @@ using BashSoft.StudentRepository.Filtering;
 
 namespace BashSoft.StudentRepository
 {
-    public enum SortingOperation { None, Filter, Order}
-    public class StudentsRepository
+    public class StudentsRepository : IStudentsRepository
     {
-        private Dictionary<string, Course> courses;
-        private Dictionary<string, Student> students;
+        private Dictionary<string, ICourse> courses;
+        private Dictionary<string, IStudent> students;
 
         private bool isDataInitialized = false;
-        private Filter filter;
-        private Sorter sorter;
+        private IDataFilter filter;
+        private IDataSorter sorter;
         private Regex matcher;
 
-        public StudentsRepository(Sorter sorter, Filter filter)
+        public StudentsRepository(IDataSorter sorter, IDataFilter filter)
         {
             this.filter = filter;
             this.sorter = sorter;
 
-            courses = new Dictionary<string, Course>();
-            students = new Dictionary<string, Student>();
+            courses = new Dictionary<string, ICourse>();
+            students = new Dictionary<string, IStudent>();
         }
 
         /// <summary>
@@ -94,20 +94,20 @@ namespace BashSoft.StudentRepository
                             var studentName = matches.Groups["userName"].Value;
                             var scores = matches.Groups["scores"].Value.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
 
-                            if (scores.Any(s => s > 100 || s < 0))
+                            if (scores.Any(s => s > SoftUniStudent.MaxScoreOnExam || s < 0))
                                 OutputWriter.DisplayException(ExceptionMessages.InvalidScoreException);
 
-                            if (scores.Length > Course.NumberOfTasksOnExam)
+                            if (scores.Length > SoftUniCourse.NumberOfTasksOnExam)
                             {
                                 OutputWriter.DisplayException(ExceptionMessages.InvalidNumberOfScoresException);
                                 continue;
                             }
 
                             if (!HasStudent(studentName))
-                                students[studentName] = new Student(studentName);
+                                students[studentName] = new SoftUniStudent(studentName);
 
                             if (!HasCourse(courseName))
-                                courses[courseName] = new Course(courseName);
+                                courses[courseName] = new SoftUniCourse(courseName);
 
                             var student = students[studentName];
                             var course = courses[courseName];
@@ -174,7 +174,7 @@ namespace BashSoft.StudentRepository
         /// <param name="userName"></param>
         public void GetStudentScoresFromCourse(string courseName, string userName)
         {
-            if(IsQueryForStudentPossible(courseName, userName))
+            if (IsQueryForStudentPossible(courseName, userName))
             {
                 var student = new KeyValuePair<string, double>(userName, students[userName].MarksByCourseName[courseName]);
                 OutputWriter.PrintStudent(student);
@@ -187,10 +187,10 @@ namespace BashSoft.StudentRepository
         /// <param name="courseName"></param>
         public void GetAllStudentsFromCourse(string courseName)
         {
-            if(IsQueryForCoursePossible(courseName))
+            if (IsQueryForCoursePossible(courseName))
             {
                 OutputWriter.WriteMessageOnNewLine($"{courseName}:");
-                foreach(var student in courses[courseName].StudentsByName)
+                foreach (var student in courses[courseName].StudentsByName)
                 {
                     var studentMark = new KeyValuePair<string, double>(student.Value.UserName, student.Value.MarksByCourseName[courseName]);
                     OutputWriter.PrintStudent(studentMark);
@@ -202,9 +202,9 @@ namespace BashSoft.StudentRepository
         /// Gets students but also does filtering query on them
         /// </summary>
         /// <param name="courseName"></param>
-        /// <param name="sorting"></param>
-        /// <param name="criteria"></param>
-        /// <param name="takeNumber"></param>
+        /// <param name="sorting">Choose either Filtering or Ordering</param>
+        /// <param name="criteria">Filtering - by performance, Sorting - Ascending, Descending</param>
+        /// <param name="takeNumber">Amount of items to take</param>
         public void GetAllStudentsFromCourse(string courseName, SortingOperation sorting, string criteria = null, int takeNumber = -1)
         {
 
@@ -216,17 +216,17 @@ namespace BashSoft.StudentRepository
                 var studentsWithMarks = courses[courseName].StudentsByName.ToDictionary(k => k.Key, v => v.Value.MarksByCourseName[courseName]);
 
                 if (sorting == SortingOperation.Filter)
-                    studentsWithMarks = filter.FilterAndTake(studentsWithMarks, criteria, takeNumber);
+                    studentsWithMarks = filter.FilterAndTake(studentsWithMarks, criteria, takeNumber) as Dictionary<string, double>;
 
                 else if (sorting == SortingOperation.Order)
-                    studentsWithMarks = sorter.OrderAndTake(studentsWithMarks, criteria, takeNumber);
+                    studentsWithMarks = sorter.OrderAndTake(studentsWithMarks, criteria, takeNumber) as Dictionary<string, double>;
 
                 if (studentsWithMarks is null)
                     return;
 
                 foreach (var student in studentsWithMarks)
                     OutputWriter.PrintStudent(student);
-            }                 
+            }
         }
 
         public bool HasCourse(string courseName) => courses.ContainsKey(courseName);
