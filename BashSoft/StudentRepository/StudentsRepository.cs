@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using BashSoft.Contracts;
+using BashSoft.DataStructures;
 using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.Models;
@@ -231,5 +232,21 @@ namespace BashSoft.StudentRepository
 
         public bool HasCourse(string courseName) => courses.ContainsKey(courseName);
         public bool HasStudent(string studentName) => courses.ContainsKey(studentName);
+
+        public ISimpleOrderedBag<ICourse> GetAlCoursesSorted(IComparer<ICourse> comparer)
+        {
+            var sortedCourses = new SimpleSortedList<ICourse>(comparer);
+            sortedCourses.AddAll(this.courses.Values);
+
+            return sortedCourses;
+        }
+
+        public ISimpleOrderedBag<IStudent> GetAllStudentsSorted(IComparer<IStudent> comparer)
+        {
+            var sortedStudents = new SimpleSortedList<IStudent>(comparer);
+            sortedStudents.AddAll(this.students.Values);
+
+            return sortedStudents;
+        }
     }
 }

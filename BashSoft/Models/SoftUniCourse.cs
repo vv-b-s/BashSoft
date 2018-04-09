@@ -36,6 +36,8 @@ namespace BashSoft.Models
 
         public IReadOnlyDictionary<string, IStudent> StudentsByName => studentsByName;
 
+        public int CompareTo(ICourse other) => this.Name.CompareTo(other.Name);
+
         /// <summary>
         /// Adds a student to a course
         /// </summary>
@@ -46,6 +48,11 @@ namespace BashSoft.Models
                 throw new DuplicateEntryInStructureException(student.UserName, Name);
 
             else studentsByName[student.UserName] = student;
+        }
+
+        public override string ToString()
+        {
+            return this.name;
         }
     }
 }

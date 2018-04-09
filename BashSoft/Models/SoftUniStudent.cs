@@ -42,6 +42,8 @@ namespace BashSoft.Models
 
         public IReadOnlyDictionary<string, double> MarksByCourseName => marksByCourseName;
 
+        public int CompareTo(IStudent other) => this.userName.CompareTo(other.UserName);
+
         /// <summary>
         /// Will enroll the student in a course. Adds the student to the course and the course to the student
         /// </summary>
@@ -74,6 +76,8 @@ namespace BashSoft.Models
 
             marksByCourseName[courseName] = CalculateMark(scores);
         }
+
+        public override string ToString() => this.userName;
 
         /// <summary>
         /// Gets the average mark by calculating the scores

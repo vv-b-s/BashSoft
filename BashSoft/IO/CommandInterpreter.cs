@@ -60,6 +60,7 @@ namespace BashSoft.IO
             else if(command == "readDb")            return new ReadDatabaseCommand(input, data, judge, repository, IOManager);
             else if(command == "dropDb")            return new DropDatabaseCommand(input, data, judge, repository, IOManager);
             else if(command == "show")              return new ShowCourseCommand(input, data, judge, repository, IOManager);
+            else if(command == "display")           return new DisplayCommand(input, data, judge, repository, IOManager);          
             else if(command == "help")              return new GetHelpCommand(input, data, judge, repository, IOManager);
             else if(command == "filter")            return new PrintFilteredStudentsCommand(input, data, judge, repository, IOManager);
             else if(command == "order")             return new PrintOrderedStudentsCommand(input, data, judge, repository, IOManager);
