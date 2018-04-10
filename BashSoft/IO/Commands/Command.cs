@@ -12,17 +12,11 @@ namespace BashSoft.IO.Commands
     {
         private string input;
         private string[] data;
-        private IContentComparer judge;
-        private IStudentsRepository repository;
-        private IDirectoryManager inputOutputManager;
 
-        protected Command(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager)
+        protected Command(string input, string[] data)
         {
             this.Input = input;
             this.Data = data;
-            this.judge = judge;
-            this.repository = repository;
-            this.inputOutputManager = iOManager;
         }
 
         public string Input
@@ -48,12 +42,6 @@ namespace BashSoft.IO.Commands
                 this.data = value;
             }
         }
-
-        protected IContentComparer Judge => this.judge;
-
-        protected IStudentsRepository Repository => this.repository;
-
-        protected IDirectoryManager InputOutputManager => this.inputOutputManager;
 
         public void DisplayInvalidCommandMessage(string input) => OutputWriter.DisplayException($"The command '{input}' is invalid");
 

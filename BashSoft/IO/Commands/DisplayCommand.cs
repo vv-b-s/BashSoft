@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BashSoft.Attributes;
 using BashSoft.Contracts;
 using BashSoft.Exceptions;
 
 namespace BashSoft.IO.Commands
 {
+    [Alias("display")]
     public class DisplayCommand : Command
     {
-        public DisplayCommand(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager) : base(input, data, judge, repository, iOManager) { }
-
-        public override void Execute()
+        public DisplayCommand(string input, string[] data) : base(input, data)
         {
             if (this.Data.Length != 3)
                 throw new InvalidCommandException(this.Input);
+        }
 
+        [Inject]
+        public IStudentsRepository Repository { get; private set; }
+
+        public override void Execute()
+        {
             var entityToDisplay = this.Data[1];
             var sortType = this.Data[2];
 

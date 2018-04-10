@@ -9,20 +9,23 @@ using BashSoft.SimpleJudge;
 using BashSoft.Exceptions;
 using BashSoft.IO.Commands;
 using BashSoft.Contracts;
+using System.Reflection;
+using BashSoft.Attributes;
+using System.Linq;
+using DI_IoC;
 
 namespace BashSoft.IO
 {
-    public class CommandInterpreter:IInterpreter
+    public class CommandInterpreter : IInterpreter
     {
-        private IContentComparer judge;
-        private IStudentsRepository repository;
-        private IDirectoryManager IOManager;
+        private DependencyContainer container;
 
         public CommandInterpreter(IContentComparer judge, IStudentsRepository repository, IDirectoryManager IOManager)
         {
-            this.judge = judge;
-            this.repository = repository;
-            this.IOManager = IOManager;
+            this.container = new DependencyContainer(typeof(InjectAttribute));
+            container.AddDependency<IContentComparer, IContentComparer>(judge);
+            container.AddDependency<IStudentsRepository, IStudentsRepository>(repository);
+            container.AddDependency<IDirectoryManager, IDirectoryManager>(IOManager);
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace BashSoft.IO
 
             try
             {
-                var commandObject =  ParseCommand(input, command, data);
+                var commandObject = ParseCommand(input, command, data);
                 commandObject.Execute();
             }
             catch (Exception ex) { OutputWriter.DisplayException(ex.Message); }
@@ -50,25 +53,16 @@ namespace BashSoft.IO
 
         private IExecutable ParseCommand(string input, string command, string[] data)
         {
+            var parametersForConstruction = new object[] { input, data };
 
-            if (command == "open")                  return new OpenFileCommand(input, data, judge, repository, IOManager);
-            else if(command == "mkdir")             return new MakeDirectoryCommand(input, data, judge, repository, IOManager);
-            else if(command == "ls")                return new TraverseFoldersCommand(input, data, judge, repository, IOManager);
-            else if(command == "cmp")               return new CompareFilesCommand(input, data, judge, repository, IOManager);
-            else if(command == "cdRel")             return new ChangeRelativePathCommand(input, data, judge, repository, IOManager);
-            else if(command == "cdAbs")             return new ChangeAbsolutePathCommand(input, data, judge, repository, IOManager);
-            else if(command == "readDb")            return new ReadDatabaseCommand(input, data, judge, repository, IOManager);
-            else if(command == "dropDb")            return new DropDatabaseCommand(input, data, judge, repository, IOManager);
-            else if(command == "show")              return new ShowCourseCommand(input, data, judge, repository, IOManager);
-            else if(command == "display")           return new DisplayCommand(input, data, judge, repository, IOManager);          
-            else if(command == "help")              return new GetHelpCommand(input, data, judge, repository, IOManager);
-            else if(command == "filter")            return new PrintFilteredStudentsCommand(input, data, judge, repository, IOManager);
-            else if(command == "order")             return new PrintOrderedStudentsCommand(input, data, judge, repository, IOManager);
-            /*else if(command == "decOrder")        commandInterpreted = TryToOrderDescending(data);
-            else if(command == "download")          commandInterpreted = TryToDownload(data);                 NOT IMPLEMENTED
-            else if(command == "downloadAsynch")    commandInterpreted = TryToDownloadAsync(data);*/
+            var typeOfCommand = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetCustomAttributes().Any(a => a.GetType() == typeof(AliasAttribute)))
+                .FirstOrDefault(type => type.GetCustomAttribute<AliasAttribute>(false).Equals(command));
 
-            else                                    throw new InvalidCommandException(command);
+            var commandInstance = container.CreateAndInject(typeOfCommand, parametersForConstruction) as IExecutable;
+
+            return commandInstance;
+
         }
     }
 }

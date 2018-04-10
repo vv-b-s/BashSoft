@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BashSoft.Attributes;
 using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.SimpleJudge;
@@ -15,11 +16,14 @@ namespace BashSoft.IO.Commands
     /// </summary>
     public abstract class ModifiablePrintCommand : Command
     {
-        public ModifiablePrintCommand(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager) : base(input, data, judge, repository, iOManager)
+        public ModifiablePrintCommand(string input, string[] data) : base(input, data)
         {
             if (data.Length != 3 && data.Length != 5)
                 throw new InvalidCommandException(input);
         }
+
+        [Inject]
+        public IStudentsRepository Repository { get; private set; }
 
         public abstract SortingOperation SortingOperation { get; }
 

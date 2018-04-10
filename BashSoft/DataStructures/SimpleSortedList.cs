@@ -52,7 +52,7 @@ namespace BashSoft.DataStructures
         public void Add(T element)
         {
             if (this.innerCollection.Length == this.size)
-                Resize();
+                Resize(); 
 
             this.innerCollection[size] = element;
             this.size++;

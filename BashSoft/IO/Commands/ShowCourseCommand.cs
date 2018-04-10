@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BashSoft.Attributes;
 using BashSoft.Contracts;
 using BashSoft.Exceptions;
 using BashSoft.SimpleJudge;
@@ -8,14 +9,19 @@ using BashSoft.StudentRepository;
 
 namespace BashSoft.IO.Commands
 {
+    [Alias("show")]
     public class ShowCourseCommand : Command
     {
-        public ShowCourseCommand(string input, string[] data, IContentComparer judge, IStudentsRepository repository, IDirectoryManager iOManager) : base(input, data, judge, repository, iOManager)
+        public ShowCourseCommand(string input, string[] data) : base(input, data)
         {
             var dataLen = data.Length;
             if (dataLen < 2 || dataLen > 3)
                 throw new InvalidCommandException(input);
         }
+
+        [Inject]
+        public IStudentsRepository Repository { get; private set; }
+
 
         public override void Execute()
         {
