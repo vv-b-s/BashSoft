@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BashSoft.DataStructures
@@ -26,6 +27,28 @@ namespace BashSoft.DataStructures
             InitializeInnerCollection(capacity);
         }
 
+        public T this[int index]
+        {
+            get
+            {
+                if (index >= this.size || index < 0)
+                    throw new ArgumentOutOfRangeException();
+
+                else return this.innerCollection[index];
+            }
+
+            set
+            {
+                if (index >= this.size || index < 0)
+                    throw new ArgumentOutOfRangeException();
+
+                else if (value == null)
+                    throw new ArgumentOutOfRangeException("You cannot assign null values to the list!");
+
+                else this.innerCollection[index] = value;
+            }
+        }
+
         /// <summary>
         /// Default comparer constructor
         /// </summary>
@@ -45,14 +68,19 @@ namespace BashSoft.DataStructures
 
         public int Size => this.size;
 
+        public int Capacity => this.innerCollection.Length;
+
         /// <summary>
         /// Adds an item to the list, resizes if needed and sorts the collection
         /// </summary>
         /// <param name="element"></param>
         public void Add(T element)
         {
+            if (element == null)
+                throw new ArgumentNullException();
+
             if (this.innerCollection.Length == this.size)
-                Resize(); 
+                Resize();
 
             this.innerCollection[size] = element;
             this.size++;
@@ -65,6 +93,9 @@ namespace BashSoft.DataStructures
         /// <param name="collection"></param>
         public void AddAll(ICollection<T> collection)
         {
+            if (collection.Any(c => c == null))
+                throw new ArgumentNullException("An item in the collection is null!");
+
             if (this.size + collection.Count >= this.innerCollection.Length)
                 MultiResize(collection);
 
@@ -77,8 +108,42 @@ namespace BashSoft.DataStructures
             QuickSorter.Sort(this.innerCollection, 0, this.size - 1, this.comparison);
         }
 
+        public bool Remove(T element)
+        {
+            var itemHasBeenRemoved = false;
+            var indexOfRemovedElement = 0;
+
+            if (element == null)
+                throw new ArgumentNullException();
+
+            for (int i = 0; i < this.Size; i++)
+            {
+                if (this.innerCollection[i].Equals(element))
+                {
+                    indexOfRemovedElement = i;
+                    this.innerCollection[i] = default(T);
+                    this.size--;
+                    itemHasBeenRemoved = true;
+                    break;
+                }
+            }
+
+            if (itemHasBeenRemoved)
+            {
+                for (int i = indexOfRemovedElement; i < this.Size - 1; i++)
+                    this.innerCollection[i] = this.innerCollection[i + 1];
+
+                this.innerCollection[this.size - 1] = default(T);
+            }
+
+            return itemHasBeenRemoved;
+        }
+
         public string JoinWth(string joiner)
         {
+            if (joiner is null)
+                throw new ArgumentNullException("The joiner cannot be null");
+
             var joinedElements = string.Join(joiner, this);
             return joinedElements;
         }
